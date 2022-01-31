@@ -1,0 +1,1 @@
+Small Unity project based on Sunny Valley Studio videos on making city builder game: https://www.youtube.com/channel/UC0UD2KSZESc5PCPzTBZC_dw
