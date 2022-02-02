@@ -1,0 +1,17 @@
+[33mcommit f823128161110524a0a487ea73f8fcc1dfd42711[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: fhgaha <antsy1992@gmail.com>
+Date:   Mon Jan 31 21:30:29 2022 +0300
+
+    Added readme
+
+[33mcommit ef9900481b7219abc64dc5afc531fcff41b6782a[m
+Author: fhgaha <antsy1992@gmail.com>
+Date:   Mon Jan 31 21:29:10 2022 +0300
+
+    Init
+
+[33mcommit cf791aa9196b9205b203d62a8c97d6a13b507e98[m
+Author: fhgaha <antsy1992@gmail.com>
+Date:   Mon Jan 31 21:19:35 2022 +0300
+
+    Add .gitignore and .gitattributes.
