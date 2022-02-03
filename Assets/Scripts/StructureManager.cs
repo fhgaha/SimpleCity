@@ -7,15 +7,16 @@ using UnityEngine;
 
 public class StructureManager : MonoBehaviour
 {
-    public StructurePrefabWeighted[] HousesPrefabs, SpecialPrefabs;
+    public StructurePrefabWeighted[] HousesPrefabs, SpecialPrefabs, BigStructurePrefabs;
     public PlacementManager PlacementManager;
 
-    private float[] houseWeights, specialWeights;
+    private float[] houseWeights, specialWeights, bigStructureWeights;
 
     private void Start()
     {
         houseWeights = HousesPrefabs.Select(prefabStats => prefabStats.Weight).ToArray();
         specialWeights = SpecialPrefabs.Select(prefabStats => prefabStats.Weight).ToArray();
+        bigStructureWeights = BigStructurePrefabs.Select(prefabStats => prefabStats.Weight).ToArray();
     }
 
     public void PlaceHouse(Vector3Int position)
@@ -25,8 +26,35 @@ public class StructureManager : MonoBehaviour
             int randomIndex = GetRandomWeightedIndex(houseWeights);
             PlacementManager.PlaceObjectOnMap(position, HousesPrefabs[randomIndex].Prefab, CellType.Structure);
             AudioPlayer.instance.PlayPlacementSound();
-
         }
+    }
+
+    internal void PlaceBigStructure(Vector3Int position)
+    {
+        int width = 2, height = 2;
+        if (CheckBigStructure(position, width, height))
+        {
+            int randomIndex = GetRandomWeightedIndex(bigStructureWeights);
+            PlacementManager.PlaceObjectOnMap(position, BigStructurePrefabs[randomIndex].Prefab, CellType.Structure,
+                width, height);
+            AudioPlayer.instance.PlayPlacementSound();
+        }
+    }
+
+    private bool CheckBigStructure(Vector3Int position, int width, int height)
+    {
+        bool nearRoad = false;
+        for (int x = 0; x < width; x++)
+            for (int z = 0; z < height; z++)
+            {
+                var newPosition = position + new Vector3Int(x, 0, z);
+                
+                if (!DefaultCheck(newPosition)) return false;
+                if (!nearRoad)
+                    nearRoad = RoadCheck(newPosition);
+            }
+
+        return nearRoad;
     }
 
     public void PlaceSpecial(Vector3Int position)   //should refactor
@@ -56,6 +84,25 @@ public class StructureManager : MonoBehaviour
 
     private bool CheckPositionBeforePlacement(Vector3Int position)
     {
+        if (!DefaultCheck(position)) return false;
+        if (!RoadCheck(position)) return false;
+
+
+        return true;
+    }
+
+    private bool RoadCheck(Vector3Int position)
+    {
+        if (PlacementManager.GetNeighboursOfTypeFor(position, CellType.Road).Count <= 0)
+        {
+            Debug.Log("must be placed near a road");
+            return false;
+        }
+        return true;
+    }
+
+    private bool DefaultCheck(Vector3Int position)
+    {
         if (!PlacementManager.CheckIfPositionInBound(position))
         {
             Debug.Log("position out of bounds");
@@ -64,11 +111,6 @@ public class StructureManager : MonoBehaviour
         if (!PlacementManager.CheckIfPositionIsFree(position))
         {
             Debug.Log("position is not empty");
-            return false;
-        }
-        if (PlacementManager.GetNeighboursOfTypeFor(position, CellType.Road).Count <= 0)
-        {
-            Debug.Log("must be placed near a road");
             return false;
         }
         return true;

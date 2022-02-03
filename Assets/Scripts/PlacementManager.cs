@@ -28,12 +28,19 @@ public class PlacementManager : MonoBehaviour
         return position.x >= 0 && position.x < Width && position.z >= 0 && position.z < Height;
     }
 
-    internal void PlaceObjectOnMap(Vector3Int position, GameObject structurePrefab, CellType type)
+    internal void PlaceObjectOnMap(Vector3Int position, GameObject structurePrefab, CellType type, 
+        int width = 1, int height = 1)
     {
-        placementGrid[position.x, position.z] = type;
         StructureModel structure = CreateNewStructureModel(position, structurePrefab, type);
-        structureDictionary.Add(position, structure);
-        DectoyNatureAt(position);
+
+        for (int x = 0; x < width; x++)
+            for (int z = 0; z < height; z++)
+            {
+                var newPosition = position + new Vector3Int(x, 0, z);
+                placementGrid[newPosition.x, newPosition.z] = type;
+                structureDictionary.Add(newPosition, structure);
+                DectoyNatureAt(newPosition);
+            }
     }
 
     private void DectoyNatureAt(Vector3Int position)
